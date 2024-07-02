@@ -1,39 +1,44 @@
 package Seminars.Lesson_5.com.example.uni.service;
 
-import java.util.List;
-
 import Seminars.Lesson_5.com.example.uni.model.DB.DataBase;
 import Seminars.Lesson_5.com.example.uni.model.impl.Student;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StudentService {
-    public Student createStudent(String name, String lastName, int idgroup){// отвечает только за создание студента (чистый метод)
+    public Student createStudent(String name, String lastName, int groupId) {
         int id;
         int size = DataBase.studentsDB.size();
-        // id = size + 1;
-        if(size == 0){
+        if (size == 0) {
             id = 1;
         } else {
             id = size + 1;
         }
-        Student student = new Student(id, name, lastName, idgroup);
+        Student student = new Student(id, name, lastName, groupId);
         DataBase.studentsDB.add(student);
         return student;
     }
 
     public Student getById(int id) throws Exception {
-        Student student = DataBase.studentsDB//список студентов
-                .stream()//запускаем поток для вычислений
-                // пример лямда-выражения (s -> s.getId() == id)
-                .filter(s -> s.getId() == id)//вызываем метод filter фильтруя по условию (s = student(переменная))
-                .findFirst()//вернуть первого найденого студента
-                .orElse(null);// если не нашли вернуть null (orElse закрывет поток stream)
+        Student student = DataBase.studentsDB
+                .stream()
+                .filter(s -> s.getId() == id)
+                .findFirst()
+                .orElse(null);
         if (student == null) {
-            throw new Exception("Студент не найден");//выбрасываем проверяемое исключение, которое компилятор требует отработать
+            throw new Exception("Student not found");
         }
         return student;
     }
 
-    public List<Student> getAllStudents(){
+    public List<Student> getAllStudents() {
         return DataBase.studentsDB;
+    }
+
+    public List<Student> getByIds(List<Integer> ids) {
+        return DataBase.studentsDB.stream()
+                .filter(s -> ids.contains(s.getId()))
+                .collect(Collectors.toList());
     }
 }

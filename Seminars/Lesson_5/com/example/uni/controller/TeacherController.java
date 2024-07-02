@@ -1,6 +1,5 @@
 package Seminars.Lesson_5.com.example.uni.controller;
 
-import Seminars.Lesson_5.com.example.uni.model.DB.DataBase;
 import Seminars.Lesson_5.com.example.uni.model.impl.LearningGroup;
 import Seminars.Lesson_5.com.example.uni.model.impl.Student;
 import Seminars.Lesson_5.com.example.uni.model.impl.Teacher;
@@ -10,12 +9,12 @@ import Seminars.Lesson_5.com.example.uni.service.TeacherService;
 
 import java.util.List;
 
-public class StudentController {
+public class TeacherController {
     private final StudentService studentService;
     private final TeacherService teacherService;
     private final LearningGroupService learningGroupService;
 
-    public StudentController() {
+    public TeacherController() {
         this.studentService = new StudentService();
         this.teacherService = new TeacherService();
         this.learningGroupService = new LearningGroupService();
@@ -42,24 +41,7 @@ public class StudentController {
         try {
             Teacher teacher = teacherService.getById(teacherId);
             List<Student> students = studentService.getByIds(studentIds);
-            
-            // Обновляем groupId студентов, входящих в учебную группу
-            for (Student student : students) {
-                if (!teacher.getGroupIds().isEmpty()) {
-                    student.setGroupId(teacher.getGroupIds().get(0)); // Используем первую группу преподавателя
-                }
-            }
-            
-            LearningGroup learningGroup = learningGroupService.createLearningGroup(teacher, students);
-            
-            // Добавляем студентов учебной группы в базу данных студентов
-            for (Student student : students) {
-                if (!DataBase.studentsDB.contains(student)) {
-                    DataBase.studentsDB.add(student);
-                }
-            }
-            
-            return learningGroup;
+            return learningGroupService.createLearningGroup(teacher, students);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
